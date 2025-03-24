@@ -1,31 +1,90 @@
----
-title: Set up your environment
-description: Learn how to set up your development environment to start building with Expo.
-hideTOC: true
----
+import React, { useState } from 'react';
+import { View, Text, FlatList, StyleSheet, Picker, SafeAreaView } from 'react-native';
 
-import { DevelopmentEnvironmentInstructions } from '~/scenes/get-started/set-up-your-environment/DevelopmentEnvironmentInstructions';
-import { DevelopmentModeForm } from '~/scenes/get-started/set-up-your-environment/DevelopmentModeForm';
-import { PlatformAndDeviceForm } from '~/scenes/get-started/set-up-your-environment/PlatformAndDeviceForm';
+export default function App() {
+  // Sample event data (you can replace this with real data later)
+  const [events] = useState([
+    { id: '1', title: 'Kids’ Day at MUNCH', date: '2025-04-01', location: 'MUNCH Museum', ageGroup: '0-5' },
+    { id: '2', title: 'Vigeland Park Picnic', date: '2025-04-05', location: 'Frogner Park', ageGroup: '6-12' },
+    { id: '3', title: 'Science Workshop', date: '2025-04-10', location: 'Teknisk Museum', ageGroup: '6-12' },
+    { id: '4', title: 'Baby Music Hour', date: '2025-04-15', location: 'Deichman Bjørvika', ageGroup: '0-5' },
+  ]);
 
-Let's set up a local development environment for running your project on Android and iOS.
+  // State for filtering by age group
+  const [selectedAge, setSelectedAge] = useState('All');
 
-## Where would you like to develop?
+  // Filter events based on selected age group
+  const filteredEvents = selectedAge === 'All'
+    ? events
+    : events.filter(event => event.ageGroup === selectedAge);
 
-We recommend using a real device to develop, since you'll get to see exactly what your users will see.
+  return (
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>Oslo Kids Events</Text>
 
-<PlatformAndDeviceForm />
+      {/* Age Group Filter */}
+      <Text style={styles.filterLabel}>Filter by Age Group:</Text>
+      <Picker
+        selectedValue={selectedAge}
+        style={styles.picker}
+        onValueChange={(itemValue) => setSelectedAge(itemValue)}
+      >
+        <Picker.Item label="All Ages" value="All" />
+        <Picker.Item label="0-5 Years" value="0-5" />
+        <Picker.Item label="6-12 Years" value="6-12" />
+      </Picker>
 
-## How would you like to develop?
+      {/* Event List */}
+      <FlatList
+        data={filteredEvents}
+        renderItem={({ item }) => (
+          <View style={styles.eventItem}>
+            <Text style={styles.eventTitle}>{item.title}</Text>
+            <Text>Date: {item.date}</Text>
+            <Text>Location: {item.location}</Text>
+            <Text>Age: {item.ageGroup}</Text>
+          </View>
+        )}
+        keyExtractor={item => item.id}
+        ListEmptyComponent={<Text>No events found for this age group.</Text>}
+      />
+    </SafeAreaView>
+  );
+}
 
-Expo Go is a sandbox for trying out Expo quickly. A development build is a build of your own app that includes Expo's developer tools.
-
-<DevelopmentModeForm />
-
----
-
-<DevelopmentEnvironmentInstructions />
-
-## Next step
-
-You have a project and a development environment. Now it's time to start developing.
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: '#f5f5f5',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginVertical: 10,
+  },
+  filterLabel: {
+    fontSize: 16,
+    marginTop: 10,
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+    marginBottom: 10,
+  },
+  eventItem: {
+    backgroundColor: '#fff',
+    padding: 15,
+    marginVertical: 5,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  eventTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+});
